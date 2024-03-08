@@ -1,18 +1,34 @@
 // Import necessary dependencies and libraries
 import axios from "axios";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-// Functional component for adding workout data
-const AddData = () => {
-  // State variables to manage form inputs and loading state
+// Functional component for updating workout data
+const UpdateData = () => {
+  // State variables to manage form inputs, loading state, and navigation
   const [workout, setWorkout] = useState("");
-  const [weight, setWeight] = useState<number>(0);
+  const [weight, setWeight] = useState<number>();
   const [loading, setLoading] = useState(false);
-
-  // Hook for navigation between routes
   const navigate = useNavigate();
+
+  // Function to fetch existing data from the server
+  const fetchData = async () => {
+    try {
+      const { data } = await axios.get("/api/get");
+      
+      // Set the default values for workout and weight based on fetched data
+      setWorkout(data.workout);
+      setWeight(data.weight);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // UseEffect hook to fetch data when the component mounts
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   // Function to handle form submission
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -22,8 +38,8 @@ const AddData = () => {
       // Set loading state to true while processing the form
       setLoading(true);
 
-      // Send a POST request to the server to add workout data
-      const { data } = await axios.post("/api/add", { workout, weight });
+      // Send a PUT request to the server to update workout data
+      const { data } = await axios.put("/api/update", { workout, weight });
 
       // Handle response from the server
       if (data.success === false) {
@@ -36,16 +52,17 @@ const AddData = () => {
       setLoading(false);
       navigate('/');
       // Display success message using toast notification
-      return toast.success("Workout added");
+      return toast.success("Workout updated");
+
     } catch (error) {
       // Log the error to the console
       console.log(error);
       // Display error message using toast notification
-      return toast.error("Error in adding workout");
+      return toast.error("Error occurred");
     }
   };
 
-  // JSX structure for the workout data form
+  // JSX structure for the workout data update form
   return (
     <form className="max-w-sm mx-auto " onSubmit={handleSubmit}>
       {/* Form input for workout */}
@@ -59,6 +76,7 @@ const AddData = () => {
           className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
           placeholder="CHEST DAY"
           required
+          defaultValue={workout}
           onChange={(e) => {
             setWorkout(e.target.value);
           }}
@@ -74,10 +92,11 @@ const AddData = () => {
           type="number"
           className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
           required
+          defaultValue={weight}
           onChange={(e) => {
             // Parse the input value to a number
             const parsedWeight = parseFloat(e.target.value);
-
+        
             // Check if the conversion is successful before setting the state
             if (!isNaN(parsedWeight)) {
               setWeight(parsedWeight);
@@ -91,12 +110,12 @@ const AddData = () => {
         type="submit"
         className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       >
-        {/* Display "LOADING" text when loading, otherwise display "ADD WORKOUT" */}
-        {loading ? "LOADING" : "ADD WORKOUT"}
+        {/* Display "LOADING" text when loading, otherwise display "UPDATE WORKOUT" */}
+        {loading ? "LOADING" : "UPDATE WORKOUT"}
       </button>
     </form>
   );
 };
 
-// Export the AddData component
-export default AddData;
+// Export the UpdateData component
+export default UpdateData;

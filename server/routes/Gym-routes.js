@@ -1,12 +1,22 @@
-import express from "express"
-import { addData, getData, updateData } from "../controllers/gymControllers.js"
-const router=express.Router()
+// Import the Express library
+import express from "express";
 
-// router.get('/test',(req,res)=>{
-//     res.send("test route")
-// })
-router.get("/get",getData)
-router.post('/add',addData)
-router.put('/update/:id',updateData)
+// Import the controller functions for handling gym-related routes
+import { addData, getData, updateData } from "../controllers/gymControllers.js";
 
-export {router as GymRouter}
+// Create an instance of the Express Router
+const router = express.Router();
+
+// Define routes and associate them with corresponding controller functions
+
+// Route to get gym data
+router.get("/get", getData);
+
+// Route to add gym data
+router.post('/add', addData);
+
+// Route to update gym data
+router.put('/update', updateData);
+
+// Export the router for use in other files
+export { router as GymRouter };
