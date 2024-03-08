@@ -1,24 +1,37 @@
-import dotenv from "dotenv"
+// Import the dotenv library to load environment variables
+import dotenv from "dotenv";
 dotenv.config();
-import express from "express"
-import mongoose from "mongoose"
-// * importing router
+
+// Import the Express and Mongoose libraries
+import express from "express";
+import mongoose from "mongoose";
+
+// Import the GymRouter for handling gym-related routes
 import { GymRouter } from "./routes/Gym-routes.js";
-const app=express()
-const PORT=3000
-app.use(express.json())
 
-// router middleware
-app.use("/api",GymRouter)
+// Create an instance of the Express application
+const app = express();
 
-mongoose.connect(process.env.MONGO_URI).then(()=>{
-    console.log("connected to gym database")
-    app.listen(PORT,()=>{
-        console.log("SERVER CONNECTED TO http://localhost:3000")
-    })
-}).catch((err)=>{
-    console.log("Something went wrong")
-    console.log(err.message)
-    
-})
+// Define the port number for the server
+const PORT = 3000;
 
+// Use JSON middleware to parse incoming requests with JSON payloads
+app.use(express.json());
+
+// Use the GymRouter middleware for routes starting with "/api"
+app.use("/api", GymRouter);
+
+// Connect to the MongoDB database using the provided URI
+mongoose.connect(process.env.MONGO_URI).then(() => {
+    // Log a message upon successful database connection
+    console.log("Connected to the gym database");
+
+    // Start the server and listen on the specified port
+    app.listen(PORT, () => {
+        console.log(`Server connected to http://localhost:${PORT}`);
+    });
+}).catch((err) => {
+    // Log an error message if the database connection fails
+    console.log("Something went wrong");
+    console.log(err.message);
+});
