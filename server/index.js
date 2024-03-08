@@ -9,7 +9,7 @@ const PORT=3000
 app.use(express.json())
 
 // router middleware
-app.use("/api/DataNeuron",GymRouter)
+app.use("/api",GymRouter)
 
 mongoose.connect(process.env.MONGO_URI).then(()=>{
     console.log("connected to gym database")
